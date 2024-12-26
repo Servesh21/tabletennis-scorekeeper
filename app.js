@@ -1,9 +1,12 @@
 
+
+
 const reset=document.querySelector('#reset');
 const winningscoreselect=document.querySelector('select');
 const currplayer=document.querySelector('#currplayer');
 let count=0;
-
+const img=document.querySelector('img')
+const jsConfetti = new JSConfetti()
 
 const p1={
     score:0,
@@ -29,12 +32,20 @@ function scoreupdate(player,opponent){
     if(!isgameover){
         player.score++;
         if(player.score===winningscore){
+            currplayer.classList.add('winner');
             currplayer.innerText = `${player.name} Wins!`;
+           
             isgameover=true;
             player.display.classList.add('has-text-success')
             opponent.display.classList.add('has-text-danger');
             player.button.disabled=true;
             opponent.button.disabled=true;
+            //img.src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHA3MmxsM3JiMWE1eWh3ZHh6MnZ5eGxpenFqcnV1dDlrdWJ4bjBxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Y3G5KETi99Kn5j9XTN/giphy.webp";
+            jsConfetti.addConfetti();
+            // setTimeout(()=>{
+            //     alert(`COngratulations ${player.name}`)
+            // },2000);
+
            
         }
         player.display.textContent=player.score;
@@ -76,6 +87,9 @@ function reset1(){
     winningscoreselect.selectedOptions[0].innerText=winningscore;
     count=0;
     currplayer.innerText='Player1 starts the Game';
+  //  img.src="https://images.unsplash.com/photo-1534158914592-062992fbe900?q=80&w=1799&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    currplayer.classList.remove('winner')
+
 
 
 }
