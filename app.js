@@ -40,7 +40,7 @@ function scoreupdate(player,opponent){
             opponent.display.classList.add('has-text-danger');
             player.button.disabled=true;
             opponent.button.disabled=true;
-            //img.src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHA3MmxsM3JiMWE1eWh3ZHh6MnZ5eGxpenFqcnV1dDlrdWJ4bjBxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Y3G5KETi99Kn5j9XTN/giphy.webp";
+            img.src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHA3MmxsM3JiMWE1eWh3ZHh6MnZ5eGxpenFqcnV1dDlrdWJ4bjBxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Y3G5KETi99Kn5j9XTN/giphy.webp";
             jsConfetti.addConfetti();
             // setTimeout(()=>{
             //     alert(`COngratulations ${player.name}`)
@@ -87,7 +87,7 @@ function reset1(){
     winningscoreselect.selectedOptions[0].innerText=winningscore;
     count=0;
     currplayer.innerText='Player1 starts the Game';
-  //  img.src="https://images.unsplash.com/photo-1534158914592-062992fbe900?q=80&w=1799&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+   img.src="https://images.unsplash.com/photo-1534158914592-062992fbe900?q=80&w=1799&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
     currplayer.classList.remove('winner')
 
 
