@@ -40,7 +40,9 @@ function scoreupdate(player,opponent){
             opponent.display.classList.add('has-text-danger');
             player.button.disabled=true;
             opponent.button.disabled=true;
-            img.src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHA3MmxsM3JiMWE1eWh3ZHh6MnZ5eGxpenFqcnV1dDlrdWJ4bjBxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Y3G5KETi99Kn5j9XTN/giphy.webp";
+const giphyApiKey = process.env.GIPHY_API_KEY; // Store the API key in an environment variable
+
+img.src = `https://media3.giphy.com/media/v1.Y2lk=${giphyApiKey}&ep=v1_internal_gif_by_id&ct=g/Y3G5KETi99Kn5j9XTN/giphy.webp`; // Use the environment variable in the URL
             jsConfetti.addConfetti();
             // setTimeout(()=>{
             //     alert(`COngratulations ${player.name}`)
@@ -87,33 +89,78 @@ function reset1(){
     winningscoreselect.selectedOptions[0].innerText=winningscore;
     count=0;
     currplayer.innerText='Player1 starts the Game';
-   img.src="https://images.unsplash.com/photo-1534158914592-062992fbe900?q=80&w=1799&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+const unsplashImageUrl = process.env.UNSPLASH_IMAGE_URL || "https://images.unsplash.com/photo-1534158914592-062992fbe900?q=80&w=1799&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; // Moved URL to environment variable
+
+img.src = unsplashImageUrl; // Use the environment variable for the image source
     currplayer.classList.remove('winner')
 
 
 
 }
 
-function winby2(player,opponent){
-    if(player.score===opponent.score&&player.score===winningscore-1){
-        winningscore++;
-        winningscoreselect.selectedOptions[0].value=winningscore;
-        winningscoreselect.selectedOptions[0].innerText=`Playing till ${winningscore}`;
+class Winningscoreselect {
+    constructor(element) {
+        this.element = element;
+    }
+
+    updateWinningscore(newWinningscore) {
+        this.element.selectedOptions[0].value = newWinningscore;
+        this.element.selectedOptions[0].innerText = `Playing till ${newWinningscore}`;
     }
 }
 
+function winby2(player, opponent, winningscore, winningscoreselect){
+    // Check if both players are one point away from the current winning score and their scores are equal
+    if(player.score === opponent.score && player.score === winningscore - 1){
+        // Increment the winning score
+        let newWinningscore = winningscore + 1;
+        
+        // Update the winning score display using the Winningscoreselect class
+        winningscoreselect.updateWinningscore(newWinningscore);
+
+        return newWinningscore; // Return the new winningscore so it can be updated in the calling scope
+    }
+    return winningscore; // Return the original winningscore if no update is needed
+}
+
+class Player {
+    constructor(name) {
+        this.name = name;
+        this.turn = false;
+    }
+
+    switchTurn(otherPlayer) {
+        this.turn = !this.turn;
+        otherPlayer.turn = !otherPlayer.turn;
+    }
+
+    getServingMessage() {
+        return `${this.name} Serves`;
+    }
+}
+
+let p1 = new Player("Player1");
+let p2 = new Player("Player2");
+
+let count = 0;
+let isgameover = false;
+let currplayer = { innerText: "" }; // Mock currplayer object
+
+
 function currentServer(){
     if(isgameover){
-
+        // Game over logic (currently empty)
     }
     else if(count===1){
         count=0;
-        p1.turn=!p1.turn;
-        p2.turn=!p2.turn;
+        // Move turn switching logic to Player class
+        p1.switchTurn(p2);
+
+        //Update the current server display based on the player's turn
         if(p1.turn===true){
-            currplayer.innerText=`Player1 Serves`;
+            currplayer.innerText= p1.getServingMessage();
         }else{
-            currplayer.innerText=`Player2 Serves`;
+            currplayer.innerText= p2.getServingMessage();
         }
     }
     else{
