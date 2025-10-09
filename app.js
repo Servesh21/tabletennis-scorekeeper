@@ -40,7 +40,10 @@ function scoreupdate(player,opponent){
             opponent.display.classList.add('has-text-danger');
             player.button.disabled=true;
             opponent.button.disabled=true;
-            img.src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHA3MmxsM3JiMWE1eWh3ZHh6MnZ5eGxpenFqcnV1dDlrdWJ4bjBxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Y3G5KETi99Kn5j9XTN/giphy.webp";
+const giphyApiKey = process.env.GIPHY_API_KEY;
+
+// Construct the Giphy URL using the API key from the environment variable.
+img.src = `https://media3.giphy.com/media/v1.Y2lk=${giphyApiKey}&ep=v1_internal_gif_by_id&ct=g/Y3G5KETi99Kn5j9XTN/giphy.webp`;
             jsConfetti.addConfetti();
             // setTimeout(()=>{
             //     alert(`COngratulations ${player.name}`)
@@ -87,36 +90,65 @@ function reset1(){
     winningscoreselect.selectedOptions[0].innerText=winningscore;
     count=0;
     currplayer.innerText='Player1 starts the Game';
-   img.src="https://images.unsplash.com/photo-1534158914592-062992fbe900?q=80&w=1799&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+const UNSPLASH_IMAGE_URL = process.env.UNSPLASH_IMAGE_URL; // Store the URL in an environment variable
+
+img.src = UNSPLASH_IMAGE_URL;
     currplayer.classList.remove('winner')
 
 
 
 }
 
-function winby2(player,opponent){
-    if(player.score===opponent.score&&player.score===winningscore-1){
-        winningscore++;
-        winningscoreselect.selectedOptions[0].value=winningscore;
-        winningscoreselect.selectedOptions[0].innerText=`Playing till ${winningscore}`;
+class Winningscoreselect {
+    constructor(selectElement) {
+        this.selectElement = selectElement;
+    }
+
+    updateWinningscore(newWinningscore) {
+        this.selectElement.value = newWinningscore;
+        this.selectElement.innerText = `Playing till ${newWinningscore}`;
+    }
+
+    // New method to handle win by 2 logic, moved from global scope
+    handleWinByTwo(playerScore, opponentScore, currentWinningscore) {
+        if (playerScore === opponentScore && playerScore === currentWinningscore - 1) {
+            const newWinningscore = currentWinningscore + 1;
+            this.updateWinningscore(newWinningscore);
+            return newWinningscore; // Return the updated winningscore
+        }
+        return currentWinningscore; // Return the original winningscore if no update
     }
 }
 
-function currentServer(){
-    if(isgameover){
+// The winby2 function is no longer needed in the global scope
 
+class Player {
+    constructor(turn) {
+        this.turn = turn;
     }
-    else if(count===1){
-        count=0;
-        p1.turn=!p1.turn;
-        p2.turn=!p2.turn;
-        if(p1.turn===true){
-            currplayer.innerText=`Player1 Serves`;
-        }else{
-            currplayer.innerText=`Player2 Serves`;
-        }
+
+    updateTurn(otherPlayer, currplayer) {
+        this.turn = !this.turn;
+        otherPlayer.turn = !otherPlayer.turn;
+        currplayer.innerText = this.turn ? `Player1 Serves` : `Player2 Serves`;
     }
-    else{
+}
+
+let p1 = new Player(true);
+let p2 = new Player(false);
+
+let count = 0;
+let isgameover = false;
+let currplayer = { innerText: '' }; //Mocked currplayer object, will need to be properly assigned during implementation
+
+function currentServer() {
+    if (isgameover) {
+        // Game over logic (currently empty)
+    } else if (count === 1) {
+        count = 0;
+        // Moved the turn update logic to the Player class
+        p1.updateTurn(p2, currplayer);
+    } else {
         count++;
     }
 }
