@@ -40,7 +40,9 @@ function scoreupdate(player,opponent){
             opponent.display.classList.add('has-text-danger');
             player.button.disabled=true;
             opponent.button.disabled=true;
-            img.src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHA3MmxsM3JiMWE1eWh3ZHh6MnZ5eGxpenFqcnV1dDlrdWJ4bjBxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Y3G5KETi99Kn5j9XTN/giphy.webp";
+const giphyApiKey = process.env.GIPHY_API_KEY; // Store the API key in an environment variable
+
+img.src = `https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeHA3MmxsM3JiMWE1eWh3ZHh6MnZ5eGxpenFqcnV1dDlrdWJ4bjBxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Y3G5KETi99Kn5j9XTN/giphy.webp`; // Construct the URL. The original code contains the API key, but it is not used.
             jsConfetti.addConfetti();
             // setTimeout(()=>{
             //     alert(`COngratulations ${player.name}`)
@@ -87,35 +89,71 @@ function reset1(){
     winningscoreselect.selectedOptions[0].innerText=winningscore;
     count=0;
     currplayer.innerText='Player1 starts the Game';
-   img.src="https://images.unsplash.com/photo-1534158914592-062992fbe900?q=80&w=1799&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+const imageBaseUrl = process.env.IMAGE_BASE_URL || "https://images.unsplash.com/photo-1534158914592-062992fbe900";
+const imageParams = "q=80&w=1799&auto=format&fit=crop&ixlib=rb-4.0.3";
+const imageId = process.env.IMAGE_ID || "M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; // Fallback, but should ideally also be from env
+
+// Construct the image URL using environment variables
+img.src = `${imageBaseUrl}?${imageParams}&ixid=${imageId}`;
     currplayer.classList.remove('winner')
 
 
 
 }
 
-function winby2(player,opponent){
-    if(player.score===opponent.score&&player.score===winningscore-1){
-        winningscore++;
-        winningscoreselect.selectedOptions[0].value=winningscore;
-        winningscoreselect.selectedOptions[0].innerText=`Playing till ${winningscore}`;
+class WinningscoreselectRefactor {
+    constructor(winningscoreselectElement) {
+        this.winningscoreselectElement = winningscoreselectElement;
+    }
+
+    updateWinningscoreDisplay(newWinningscore) {
+        this.winningscoreselectElement.selectedOptions[0].value = newWinningscore;
+        this.winningscoreselectElement.selectedOptions[0].innerText = `Playing till ${newWinningscore}`;
     }
 }
 
-function currentServer(){
+function winby2(player, opponent, winningscore, winningscoreselectRefactor) {
+    // Check if both players are one point away from the current winning score and have the same score
+    if (player.score === opponent.score && player.score === winningscore - 1) {
+        let newWinningscore = winningscore + 1; // Calculate the new winning score
+        winningscoreselectRefactor.updateWinningscoreDisplay(newWinningscore); //Update the winning score display
+        return newWinningscore;
+    }
+    return winningscore; // Return original winningscore if condition is not met.
+}
+
+class Player {
+    constructor(turn) {
+        this.turn = turn;
+    }
+
+    switchTurn(otherPlayer, currplayer) {
+        this.turn = !this.turn;
+        otherPlayer.turn = !otherPlayer.turn;
+        if (this.turn === true) {
+            currplayer.innerText = `Player1 Serves`; // Assuming 'this' is player 1
+        } else {
+            currplayer.innerText = `Player2 Serves`; // Assuming 'otherPlayer' is player 2
+        }
+    }
+}
+
+let p1 = new Player(true);
+let p2 = new Player(false);
+let count = 0;
+let isgameover = false; // Initialize isgameover
+
+function currentServer(currplayer){
+    //Check if the game is over
     if(isgameover){
 
     }
+    // If count is 1, switch turns between players
     else if(count===1){
         count=0;
-        p1.turn=!p1.turn;
-        p2.turn=!p2.turn;
-        if(p1.turn===true){
-            currplayer.innerText=`Player1 Serves`;
-        }else{
-            currplayer.innerText=`Player2 Serves`;
-        }
+        p1.switchTurn(p2, currplayer); // Use the new method to handle turn switching and UI updates
     }
+    // Increment count if it's not 1
     else{
         count++;
     }
